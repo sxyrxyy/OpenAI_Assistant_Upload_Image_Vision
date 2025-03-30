@@ -10,7 +10,6 @@ from typing import Optional
 load_dotenv()
 api_key = os.getenv("OPENAI_API_KEY")
 ASSISTANT_ID = os.getenv("ASSISTANT_ID")
-THREAD_ID = os.getenv("THREAD_ID")
 
 HEADERS = {
     "OpenAI-Beta": "assistants=v2",
