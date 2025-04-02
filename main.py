@@ -46,6 +46,7 @@ async def upload_file(file_path: str, purpose="vision") -> dict:
 
 async def create_message(thread_id: str, role: str, content) -> dict:
     url = f"{BASE_URL}/threads/{thread_id}/messages"
+    print(f'Message URL: {url}')
     body = {
         "role": role,
         "content": content
@@ -58,6 +59,7 @@ async def create_message(thread_id: str, role: str, content) -> dict:
 
 async def run_thread(thread_id: str, assistant_id: str) -> dict:
     url = f"{BASE_URL}/threads/{thread_id}/runs"
+    print(f'Run Thread URL: {url}')
     body = {"assistant_id": assistant_id}
     async with httpx.AsyncClient(timeout=60.0) as client:
         response = await client.post(url, headers=HEADERS, json=body)
@@ -67,6 +69,7 @@ async def run_thread(thread_id: str, assistant_id: str) -> dict:
 
 async def fetch_latest_assistant_message(thread_id: str) -> Optional[dict]:
     url = f"{BASE_URL}/threads/{thread_id}/messages"
+    print(f'Fetch Messages URL: {url}')
     params = {
         "limit": 10,
         "order": "desc"
@@ -85,6 +88,7 @@ async def fetch_latest_assistant_message(thread_id: str) -> Optional[dict]:
 
 async def delete_last_file(file_id: str) -> Optional[dict]:
     url = f"{BASE_URL}/files/{file_id}"
+    print(f'Last File URL: {url}')
     async with httpx.AsyncClient(timeout=60.0) as client:
         response = await client.delete(url, headers=HEADERS)
         response.raise_for_status()
@@ -93,6 +97,7 @@ async def delete_last_file(file_id: str) -> Optional[dict]:
 
 async def delete_thread(thread_id: str) -> dict:
     url = f"{BASE_URL}/threads/{thread_id}"
+    print(f'Thread URL: {url}')
     async with httpx.AsyncClient() as client:
         response = await client.delete(url, headers=HEADERS)
         response.raise_for_status()
@@ -150,10 +155,16 @@ async def main():
         if text_item is not None:
             value = text_item["text"]["value"]
             print("Assistant's text value:", value)
+            delete_thread_info = await delete_thread(thread_id)
+            print("Delete Thread:", delete_thread_info)
         else:
             print("No text item found in assistant content.")
+            delete_thread_info = await delete_thread(thread_id)
+            print("Delete Thread:", delete_thread_info)
     else:
         print("No assistant message found.")
+        delete_thread_info = await delete_thread(thread_id)
+        print("Delete Thread:", delete_thread_info)
 
     delete_thread_info = await delete_thread(thread_id)
     print("Delete Thread:", delete_thread_info)
